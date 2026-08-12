@@ -12,6 +12,8 @@ class BoardsController < ApplicationController
   end
 
   def show
+    @standup_users = @board.users.active.alphabetically
+
     if @filter.used?(ignore_boards: true)
       show_filtered_cards
     else
@@ -92,7 +94,7 @@ class BoardsController < ApplicationController
     def show_columns
       cards = @board.cards.awaiting_triage.latest.with_golden_first.preloaded
       set_page_and_extract_portion_from cards
-      fresh_when etag: [ @board, @page.records, @user_filtering, Current.account ]
+      fresh_when etag: [ @board, @page.records, @user_filtering, Current.account, "standup-v1" ]
     end
 
     def board_params

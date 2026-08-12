@@ -30,6 +30,7 @@
           <%= render "filters/settings/controls", user_filtering: user_filtering, form: form %>
 
           <%= render "filters/settings/toggle", user_filtering: user_filtering %>
+          <%= render "boards/show/standup", **standup if local_assigns[:standup] %>
       <% end %>
       <%= render "filters/settings/manage", user_filtering: user_filtering, no_filtering_url: no_filtering_url %>
     <% end %>

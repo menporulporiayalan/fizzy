@@ -15,6 +15,21 @@ class BoardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "standup only includes active users with board access" do
+    board = boards(:writebook)
+    removed_user = users(:jz)
+    board.accesses.find_by!(user: removed_user).destroy
+    first_standup_user = board.users.active.alphabetically.first
+
+    get board_path(board)
+
+    assert_select "[data-standup]:not(.quick-filter)" do
+      assert_select "a", text: "Standup"
+      assert_select "a[href*='#{first_standup_user.id}']"
+      assert_select "a[href*='#{removed_user.id}']", count: 0
+    end
+  end
+
   test "invalidates page title cache when account updates" do
     get board_path(boards(:writebook))
     etag = response.headers["ETag"]

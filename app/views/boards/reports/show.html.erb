@@ -26,7 +26,7 @@
       createdAt: c.created_at.iso8601,
       createdBy: c.creator.name,
       points:    c.points,
-      assignees: c.assignees.map { |a| { name: a.name, hue: (a.name.bytes.sum % 360) } },
+      assignees: c.assignees.select { |a| @board_user_ids.include?(a.id) }.map { |a| { name: a.name, hue: (a.name.bytes.sum % 360) } },
       status:    status,
       currentTab: card_current_tab(c),
       tags:      c.tags.map(&:title),
@@ -56,13 +56,13 @@
       actor:         e.creator.name,
       cardNumber:    card.number,
       cardTitle:     card.title,
-      cardAssignees: card.assignees.map(&:name),
+      cardAssignees: card.assignees.select { |a| @board_user_ids.include?(a.id) }.map(&:name),
       cardClosedAt:  card.closed_at&.iso8601,
       cardCreatedAt: card.created_at.iso8601
     }
   end.compact.to_json
 
-  assignees_json = @board_assignees.map { |u| { id: u.id, name: u.name, hue: (u.name.bytes.sum % 360) } }.to_json
+  assignees_json = @board_users.map { |u| { id: u.id, name: u.name, hue: (u.name.bytes.sum % 360) } }.to_json
 %>
 
 <div class="reports-page"
@@ -86,7 +86,7 @@
       </button>
 
       <div class="rp-popover" hidden data-reports-target="assigneePopover" data-action="click:stop">
-        <% @board_assignees.each do |user| %>
+        <% @board_users.each do |user| %>
           <button type="button" class="rp-popover__row" data-name="<%= user.name %>" data-action="click->reports#toggleAssignee">
             <span class="rp-avatar" style="width:22px;height:22px;font-size:9px;background:radial-gradient(circle at 30% 25%,hsl(<%= user.name.bytes.sum % 360 %> 70% 78%) 0%,hsl(<%= user.name.bytes.sum % 360 %> 55% 55%) 55%,hsl(<%= user.name.bytes.sum % 360 %> 60% 40%) 100%)">
               <%= user.name[0].upcase %>
@@ -95,7 +95,7 @@
             <svg class="rp-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" hidden><path d="M5 12l5 5L20 7"/></svg>
           </button>
         <% end %>
-        <% if @board_assignees.any? %>
+        <% if @board_users.any? %>
           <button type="button" class="rp-popover__clear" data-action="click->reports#clearAssignees">Clear</button>
         <% else %>
           <div class="rp-popover__row" style="color:var(--rp-ink-mute)">No assignees yet</div>
@@ -253,15 +253,16 @@
                     <% end %>
                   </td>
                   <td>
-                    <% if card.assignees.any? %>
+                    <% card_assignees = card.assignees.select { |assignee| @board_user_ids.include?(assignee.id) } %>
+                    <% if card_assignees.any? %>
                       <div class="rp-assignee-cell">
-                        <% card.assignees.each do |assignee| %>
+                        <% card_assignees.each do |assignee| %>
                           <% hue = assignee.name.bytes.sum % 360 %>
                           <span class="rp-avatar" style="width:22px;height:22px;font-size:9px;background:radial-gradient(circle at 30% 25%,hsl(<%= hue %> 70% 78%) 0%,hsl(<%= hue %> 55% 55%) 55%,hsl(<%= hue %> 60% 40%) 100%)" title="<%= assignee.name %>">
                             <%= assignee.name[0].upcase %>
                           </span>
                         <% end %>
-                        <span class="rp-assignee-cell__name"><%= card.assignees.map(&:name).join(", ") %></span>
+                        <span class="rp-assignee-cell__name"><%= card_assignees.map(&:name).join(", ") %></span>
                       </div>
                     <% else %>
                       <span class="rp-muted">—</span>

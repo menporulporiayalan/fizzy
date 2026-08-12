@@ -1,0 +1,26 @@
+<% if users.any? %>
+  <% standup_active = params[:standup].present? %>
+  <% selected_index = users.index { |user| user.id == Array(params[:assignee_ids]).first } || 0 %>
+  <% filter_params = filter.as_params.except(:assignee_ids, :assignment_status) %>
+
+  <div class="flex-inline align-center gap-half" data-standup>
+    <% if standup_active %>
+      <% selected_user = users[selected_index] %>
+      <% if selected_index.positive? %>
+        <%= link_to "‹", board_path(board, filter_params.merge(standup: 1, assignee_ids: [ users[selected_index - 1].id ])), class: "btn input input--select txt-small", aria: { label: "Previous team member" } %>
+      <% end %>
+
+      <span class="txt-x-small font-weight-semibold">
+        Standup: <%= selected_user.name %> (<%= selected_index + 1 %> of <%= users.size %>)
+      </span>
+
+      <% if selected_index < users.size - 1 %>
+        <%= link_to "›", board_path(board, filter_params.merge(standup: 1, assignee_ids: [ users[selected_index + 1].id ])), class: "btn input input--select txt-small", aria: { label: "Next team member" } %>
+      <% end %>
+
+      <%= link_to "Done", board_path(board, filter_params), class: "btn txt-x-small" %>
+    <% else %>
+      <%= link_to "Standup", board_path(board, filter_params.merge(standup: 1, assignee_ids: [ users.first.id ])), class: "btn input input--select flex-inline txt-x-small" %>
+    <% end %>
+  </div>
+<% end %>

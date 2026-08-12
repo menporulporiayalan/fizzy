@@ -356,6 +356,12 @@ export default class extends Controller {
 
   updateChips() {
     const hasAssignees = this.selectedAssignees.length > 0
+    this.assigneePopoverTarget.querySelectorAll(".rp-popover__row[data-name]").forEach(row => {
+      const selected = this.selectedAssignees.includes(row.dataset.name)
+      row.classList.toggle("is-active", selected)
+      const check = row.querySelector(".rp-check")
+      if (check) check.hidden = !selected
+    })
     this.assigneeChipTarget.classList.toggle("rp-chip--active", hasAssignees)
     this.assigneeChipValueTarget.textContent = hasAssignees
       ? (this.selectedAssignees.length === 1 ? this.selectedAssignees[0] : `${this.selectedAssignees.length} assignees`)

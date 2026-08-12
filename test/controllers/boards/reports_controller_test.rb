@@ -41,6 +41,27 @@ class Boards::ReportsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show only includes active board users in report assignees" do
+    board_user = users(:kevin)
+    stale_assignee = users(:jz)
+    card = cards(:logo)
+    @board.accesses.find_by!(user: stale_assignee).destroy
+
+    get board_report_path(@board)
+
+    assert_select ".reports-page" do |elements|
+      report = elements.first
+      assignees = JSON.parse(report["data-reports-assignees-value"])
+      cards = JSON.parse(report["data-reports-cards-value"])
+      report_card = cards.find { |candidate| candidate["number"] == card.number }
+
+      assert_includes assignees.pluck("name"), board_user.name
+      assert_not_includes assignees.pluck("name"), stale_assignee.name
+      assert_includes report_card["assignees"].pluck("name"), board_user.name
+      assert_not_includes report_card["assignees"].pluck("name"), stale_assignee.name
+    end
+  end
+
   test "show page is linked from board header" do
     get board_path(@board)
     assert_select "a[href='#{board_report_path(@board)}']"

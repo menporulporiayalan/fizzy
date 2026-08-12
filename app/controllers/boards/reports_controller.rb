@@ -21,13 +21,8 @@ class Boards::ReportsController < ApplicationController
       .limit(200)
     @event_working_minutes = event_working_minutes(@events)
 
-    @board_assignees = User
-      .joins("INNER JOIN assignments ON assignments.assignee_id = users.id")
-      .joins("INNER JOIN cards ON cards.id = assignments.card_id")
-      .where(cards: { board_id: @board.id })
-      .select("users.id, users.name")
-      .distinct
-      .order("users.name")
+    @board_users = @board.users.active.alphabetically
+    @board_user_ids = @board_users.map(&:id).to_set
 
     closed_cards = @cards.select(&:closed?)
     cycle_hours  = closed_cards.filter_map do |c|
