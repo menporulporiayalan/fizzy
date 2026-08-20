@@ -19,7 +19,7 @@
   </div>
 <% end %>
 
-<%= render "filters/settings", filter_url: board_path(@board), user_filtering: @user_filtering, no_filtering_url: board_path(@board), standup: { board: @board, users: @standup_users, filter: @filter } do |form| %>
+<%= render "filters/settings", filter_url: board_path(@board), user_filtering: @user_filtering, no_filtering_url: board_path(@board) do |form| %>
   <%= hidden_field_tag "board_ids[]", @board.id %>
 <% end %>
 

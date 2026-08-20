@@ -10,6 +10,15 @@ module Card::Searchable
     end
   end
 
+  class_methods do
+    # Matches "11" or "#11" against the card number, so people can look a card up by its number.
+    def numbered(query)
+      if number = query.to_s[/\A#?(\d+)\z/, 1]
+        where(number: number)
+      end
+    end
+  end
+
   def search_title
     title
   end

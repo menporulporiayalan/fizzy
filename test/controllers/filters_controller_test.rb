@@ -24,6 +24,15 @@ class FiltersControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ boards(:writebook) ], filter.boards
   end
 
+  test "filter pickers only allow one selection" do
+    get board_path(boards(:writebook))
+
+    pickers = css_select(".quick-filter[data-controller~='multi-selection-combobox']")
+
+    assert_predicate pickers, :any?
+    assert_select ".quick-filter[data-multi-selection-combobox-single-value='true']", count: pickers.size
+  end
+
   test "destroy" do
     filter = filters(:jz_assignments)
     expected_params = filter.as_params

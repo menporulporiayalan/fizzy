@@ -28,6 +28,10 @@ class User::Filtering
     @users ||= account.users.active.alphabetically
   end
 
+  def releases
+    @releases ||= account.cards.releases
+  end
+
   def filters
     @filters ||= user.filters.all
   end
@@ -53,6 +57,10 @@ class User::Filtering
     filter.tags.any?
   end
 
+  def show_release?
+    filter.release.present?
+  end
+
   def show_assignees?
     filter.assignees.any?
   end
@@ -75,7 +83,7 @@ class User::Filtering
   end
 
   def cache_key
-    ActiveSupport::Cache.expand_cache_key([ user, filter, expanded?, boards, tags, users, filters ], "user-filtering")
+    ActiveSupport::Cache.expand_cache_key([ user, filter, expanded?, boards, tags, users, releases, filters ], "user-filtering")
   end
 
   private

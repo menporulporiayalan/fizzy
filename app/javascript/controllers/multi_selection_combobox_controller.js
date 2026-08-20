@@ -9,7 +9,8 @@ export default class extends Controller {
     selectPropertyName: { type: String, default: "aria-checked" },
     defaultValue: String,
     noSelectionLabel: { type: String, default: "No selection" },
-    labelPrefix: String
+    labelPrefix: String,
+    single: Boolean
   }
 
   connect() {
@@ -57,7 +58,7 @@ export default class extends Controller {
     if (isSelected) {
       item.setAttribute(this.selectPropertyNameValue, "false")
     } else {
-      if (this.isAnExclusiveSelectionItemInvolved(item)) {
+      if (this.singleValue || this.isAnExclusiveSelectionItemInvolved(item)) {
         this.#deselectAll()
       }
 

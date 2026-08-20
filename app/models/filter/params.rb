@@ -7,6 +7,7 @@ module Filter::Params
     :sorted_by,
     :creation,
     :closure,
+    :release,
     card_ids: [],
     column_ids: [],
     assignee_ids: [],
@@ -43,7 +44,7 @@ module Filter::Params
 
   def used?(ignore_boards: false)
     tags.any? || assignees.any? || creators.any? || closers.any? ||
-      terms.any? || card_ids&.any? || (!ignore_boards && boards.present?) ||
+      terms.any? || card_ids&.any? || release.present? || (!ignore_boards && boards.present?) ||
       assignment_status.unassigned? || !indexed_by.all? || !sorted_by.latest?
   end
 
@@ -57,6 +58,7 @@ module Filter::Params
       params[:closure]           = closure
       params[:assignment_status] = assignment_status
       params[:terms]             = terms
+      params[:release]           = release
       params[:tag_ids]           = tags.ids
       params[:board_ids]    = boards.ids
       params[:card_ids]          = card_ids

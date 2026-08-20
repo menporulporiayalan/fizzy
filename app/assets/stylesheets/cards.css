@@ -188,6 +188,68 @@
     text-transform: uppercase;
   }
 
+  /* Release
+  /* ------------------------------------------------------------------------ */
+  .card__release {
+    align-items: center;
+    align-self: center;
+    display: flex;
+    flex-shrink: 1;
+    max-inline-size: 24ch;
+    min-inline-size: 0;
+    position: relative;
+  }
+
+  .card__release-button {
+    --btn-background: transparent;
+    --btn-border-size: 0;
+    --btn-gap: 0.4ch;
+    --btn-padding: 0.25em;
+
+    color: inherit;
+    font-size: var(--text-x-small);
+    font-weight: 600;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  .card__release-button--blank {
+    opacity: 0.5;
+
+    @media (any-hover: hover) {
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .card__release-icon {
+    --icon-size: 1em;
+
+    opacity: 0.7;
+  }
+
+  .card__release-label {
+    font-size: 0.85em;
+    letter-spacing: 0.06em;
+    opacity: 0.65;
+    text-transform: uppercase;
+  }
+
+  .card__release-name {
+    min-inline-size: 0;
+  }
+
+  .card__release-picker {
+    inset: 100% 0 auto auto;
+    position: absolute;
+    z-index: 2;
+
+    &[open] {
+      display: flex;
+    }
+  }
+
   .card__points-form {
     align-items: center;
     display: flex;

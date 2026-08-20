@@ -4,7 +4,7 @@ class SearchesController < ApplicationController
   def show
     @query = params[:q].blank? ? nil : params[:q]
 
-    if card = Current.user.accessible_cards.find_by_id(@query)
+    if card = find_card(@query)
       respond_to do |format|
         format.html { @card = card }
         format.json { set_page_and_extract_portion_from Current.user.accessible_cards.where(id: card.id) }
@@ -23,4 +23,13 @@ class SearchesController < ApplicationController
       end
     end
   end
+
+  private
+    def find_card(query)
+      if by_number = Current.user.accessible_cards.numbered(query)
+        by_number.first
+      else
+        Current.user.accessible_cards.find_by_id(query)
+      end
+    end
 end

@@ -32,9 +32,8 @@ class Filter < ApplicationRecord
       result = result.where(cards: { created_at: creation_window }) if creation_window
       result = result.closed_at_window(closure_window) if closure_window
       result = result.closed_by(closers) if closers.present?
-      result = terms.reduce(result) do |result, term|
-        result.mentioning(term, user: creator)
-      end
+      result = result.where(release: release) if release.present?
+      result = terms.reduce(result) { |result, term| matching_term(result, term) }
       result = result.where(column_id: column_ids) if column_ids.present?
 
       result.distinct
@@ -66,6 +65,14 @@ class Filter < ApplicationRecord
   end
 
   private
+    def matching_term(relation, term)
+      if by_number = relation.numbered(term)
+        by_number
+      else
+        relation.mentioning(term, user: creator)
+      end
+    end
+
     def filter_boards(relation)
       relation = relation.where(cards: { account_id: creator.account_id }).where(board: boards.ids)
       if joins_has_many?

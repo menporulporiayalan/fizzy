@@ -85,6 +85,24 @@ class FilterTest < ActiveSupport::TestCase
     assert users(:david).filters.create!(board_ids: [ boards(:writebook).id ]).cacheable?
   end
 
+  test "cards matching a card number term" do
+    card = cards(:layout)
+
+    assert_equal [ card ], users(:david).filters.new(terms: [ card.number.to_s ]).cards
+    assert_equal [ card ], users(:david).filters.new(terms: [ "##{card.number}" ]).cards
+    assert_empty users(:david).filters.new(terms: [ "999999" ]).cards
+  end
+
+  test "cards filtered by release" do
+    cards(:layout).update!(release: "v1.2")
+    cards(:logo).update!(release: "v1.3")
+
+    filter = users(:david).filters.new release: "v1.2"
+    assert_equal [ cards(:layout) ], filter.cards
+    assert_predicate filter, :used?
+    assert_equal "released in v1.2", filter.summary
+  end
+
   test "terms" do
     assert_equal [], users(:david).filters.new.terms
     assert_equal [ "haggis" ], users(:david).filters.new(terms: [ "haggis" ]).terms

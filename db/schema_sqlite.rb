@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_07_09_120000) do
+ActiveRecord::Schema[8.2].define(version: 2026_08_20_120000) do
   create_table "accesses", id: :uuid, force: :cascade do |t|
     t.datetime "accessed_at"
     t.uuid "account_id", null: false
@@ -225,12 +225,14 @@ ActiveRecord::Schema[8.2].define(version: 2026_07_09_120000) do
     t.datetime "last_active_at", null: false
     t.bigint "number", null: false
     t.integer "points"
+    t.string "release"
     t.string "status", limit: 255, default: "drafted", null: false
     t.string "title", limit: 255
     t.datetime "updated_at", null: false
     t.index ["account_id", "board_id", "status"], name: "index_cards_on_account_id_and_board_id_and_status"
     t.index ["account_id", "last_active_at", "status"], name: "index_cards_on_account_id_and_last_active_at_and_status"
     t.index ["account_id", "number"], name: "index_cards_on_account_id_and_number", unique: true
+    t.index ["account_id", "release"], name: "index_cards_on_account_id_and_release"
     t.index ["board_id"], name: "index_cards_on_board_id"
     t.index ["column_id"], name: "index_cards_on_column_id"
   end

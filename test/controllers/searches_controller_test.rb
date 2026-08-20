@@ -46,6 +46,14 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".search__blank-slate", text: "No matches"
   end
 
+  test "search by card number" do
+    get search_path(q: @card.number, script_name: "/#{@account.external_account_id}")
+    assert_select "form[data-controller='auto-submit'][action$=?]", "/cards/#{@card.number}"
+
+    get search_path(q: "##{@card.number}", script_name: "/#{@account.external_account_id}")
+    assert_select "form[data-controller='auto-submit'][action$=?]", "/cards/#{@card.number}"
+  end
+
   test "search as JSON" do
     get search_path(q: "broken", script_name: "/#{@account.external_account_id}"), as: :json
     assert_response :success
