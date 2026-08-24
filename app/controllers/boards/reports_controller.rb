@@ -9,7 +9,8 @@ class Boards::ReportsController < ApplicationController
     @active_view            = params[:view].presence || "table"
 
     base_cards = @board.cards
-      .includes(:assignees, :closure, :tags, :not_now, :creator, :column)
+      .includes(:closure, :tags, :not_now, :creator, :column, assignees: :identity)
+      .with_rich_text_description
       .order(created_at: :desc)
 
     @cards = filter_cards(base_cards.to_a)

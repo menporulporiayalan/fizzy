@@ -221,6 +221,20 @@ export default class extends Controller {
       "Card":      e.cardTitle
     }))
 
+    const dsPulseSprintRows = cards.map(c => ({
+      title: c.title,
+      description: c.description,
+      developer_email: c.assignees[0]?.email || null,
+      estimate: c.points ?? null,
+      status: c.closedAt ? "done" : "todo",
+      started_at: this.fmtExportDate(new Date(c.createdAt)),
+      completed_at: c.closedAt ? this.fmtExportDate(new Date(c.closedAt)) : null,
+      carried_over: null,
+      carryover_reason: null,
+      carryover_note: null,
+      source_reference: null
+    }))
+
     const closed = cards.filter(c => c.closedAt)
     const inFlight = cards.filter(c => !c.closedAt)
     const summaryRows = [
@@ -242,6 +256,7 @@ export default class extends Controller {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryRows), "Summary")
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(cardRows), "Cards")
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(activityRows), "Activity")
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dsPulseSprintRows, { header: [ "title", "description", "developer_email", "estimate", "status", "started_at", "completed_at", "carried_over", "carryover_reason", "carryover_note", "source_reference" ] }), "ds_pulse sprint")
 
     const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-")
     XLSX.writeFile(wb, `dayzy-reports-${stamp}.xlsx`)
@@ -511,6 +526,11 @@ export default class extends Controller {
 
   fmtDate(d) {
     return d.toLocaleString(undefined, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })
+  }
+
+  fmtExportDate(d) {
+    const pad = value => String(value).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
 
   fmtWorkingTime(minutes) {

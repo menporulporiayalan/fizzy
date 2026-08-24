@@ -41,6 +41,18 @@ class Boards::ReportsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "show includes the fields used by the DS Pulse sprint export" do
+    get board_report_path(@board)
+
+    assert_select ".reports-page" do |elements|
+      report_cards = JSON.parse(elements.first["data-reports-cards-value"])
+      report_card = report_cards.find { |card| card["number"] == cards(:logo).number }
+
+      assert_equal cards(:logo).description.to_plain_text, report_card["description"]
+      assert_equal "jz@37signals.com", report_card["assignees"].find { |assignee| assignee["name"] == "JZ" }["email"]
+    end
+  end
+
   test "show only includes active board users in report assignees" do
     board_user = users(:kevin)
     stale_assignee = users(:jz)
