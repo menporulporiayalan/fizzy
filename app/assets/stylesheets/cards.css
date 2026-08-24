@@ -206,9 +206,13 @@
     --btn-gap: 0.4ch;
     --btn-padding: 0.25em;
 
+    aspect-ratio: auto;
+    block-size: auto;
     color: inherit;
+    display: inline-flex;
     font-size: var(--text-x-small);
     font-weight: 600;
+    inline-size: auto;
     max-inline-size: 100%;
     min-inline-size: 0;
   }
