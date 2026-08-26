@@ -226,7 +226,7 @@ export default class extends Controller {
       description: c.description,
       developer_email: c.assignees[0]?.email || null,
       estimate: c.points ?? null,
-      status: c.closedAt ? "done" : "todo",
+      status: c.dsPulseStatus,
       started_at: this.fmtExportDate(new Date(c.createdAt)),
       completed_at: c.closedAt ? this.fmtExportDate(new Date(c.closedAt)) : null,
       carried_over: null,
@@ -282,7 +282,7 @@ export default class extends Controller {
       const cutoff = this.dateCutoff()
       const to = this.dateTo ? new Date(this.dateTo + "T23:59:59") : null
       cards = cards.filter(c => {
-        const ref = c.closedAt ? new Date(c.closedAt) : new Date(c.createdAt)
+        const ref = new Date(c.updatedAt)
         if (cutoff && ref < cutoff) return false
         if (to && ref > to) return false
         return true

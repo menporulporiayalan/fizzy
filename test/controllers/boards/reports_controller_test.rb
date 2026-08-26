@@ -42,6 +42,9 @@ class Boards::ReportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show includes the fields used by the DS Pulse sprint export" do
+    cards(:logo).update!(column: columns(:writebook_review))
+    cards(:shipping).close(user: users(:kevin))
+
     get board_report_path(@board)
 
     assert_select ".reports-page" do |elements|
@@ -50,6 +53,25 @@ class Boards::ReportsControllerTest < ActionDispatch::IntegrationTest
 
       assert_equal cards(:logo).description.to_plain_text, report_card["description"]
       assert_equal "jz@37signals.com", report_card["assignees"].find { |assignee| assignee["name"] == "JZ" }["email"]
+      assert_equal cards(:logo).updated_at.iso8601, report_card["updatedAt"]
+      assert_equal "todo", report_cards.find { |card| card["number"] == cards(:buy_domain).number }["dsPulseStatus"]
+      assert_equal "in_progress", report_cards.find { |card| card["number"] == cards(:text).number }["dsPulseStatus"]
+      assert_equal "in_review", report_card["dsPulseStatus"]
+      assert_equal "done", report_cards.find { |card| card["number"] == cards(:shipping).number }["dsPulseStatus"]
+    end
+  end
+
+  test "show maps Bug cards to DS Pulse in review" do
+    columns(:writebook_review).update!(name: "Bug")
+    cards(:logo).update!(column: columns(:writebook_review))
+
+    get board_report_path(@board)
+
+    assert_select ".reports-page" do |elements|
+      report_cards = JSON.parse(elements.first["data-reports-cards-value"])
+      report_card = report_cards.find { |card| card["number"] == cards(:logo).number }
+
+      assert_equal "in_review", report_card["dsPulseStatus"]
     end
   end
 

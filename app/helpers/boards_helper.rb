@@ -28,4 +28,14 @@ module BoardsHelper
       card.column&.name || "Todos"
     end
   end
+
+  def ds_pulse_status(card)
+    return "done" if card.closed?
+
+    case card.column&.name&.downcase
+    when "in progress" then "in_progress"
+    when "qa", "review", "bug" then "in_review"
+    else "todo"
+    end
+  end
 end

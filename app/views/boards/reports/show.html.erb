@@ -24,12 +24,14 @@
       title:     c.title,
       closedAt:  c.closed_at&.iso8601,
       createdAt: c.created_at.iso8601,
+      updatedAt: c.updated_at.iso8601,
       createdBy: c.creator.name,
       description: c.description.to_plain_text,
       points:    c.points,
       assignees: c.assignees.select { |a| @board_user_ids.include?(a.id) }.map { |a| { name: a.name, email: a.identity&.email_address, hue: (a.name.bytes.sum % 360) } },
       status:    status,
       currentTab: card_current_tab(c),
+      dsPulseStatus: ds_pulse_status(c),
       tags:      c.tags.map(&:title),
       url:       card_path(c)
     }
@@ -108,7 +110,7 @@
     <div class="rp-chip-wrap" data-action="click->reports#toggleDatePopover:stop">
       <button type="button" class="rp-chip" data-reports-target="dateChip">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-        <span class="rp-chip__label">Completed</span>
+        <span class="rp-chip__label">Updated</span>
         <span class="rp-chip__sep"></span>
         <span class="rp-chip__value" data-reports-target="dateChipValue">All time</span>
         <span class="rp-chip__x" hidden data-reports-target="dateChipX" data-action="click->reports#clearDate:stop">×</span>
