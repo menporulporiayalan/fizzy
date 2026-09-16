@@ -18,12 +18,12 @@ gem "turbo-rails", github: "hotwired/turbo-rails", branch: "offline-cache"
 gem "bootsnap", require: false
 gem "kamal", require: false
 gem "puma", "~> 8.0"
-gem "solid_cable", github: "rails/solid_cable"
+gem "solid_cable", "~> 4.0"
 gem "solid_cache", "~> 1.0"
-gem "solid_queue", github: "rails/solid_queue"
+gem "solid_queue", "~> 1.7"
 gem "sqlite3", ">= 2.0"
 gem "thruster", require: false
-gem "trilogy", "~> 2.12"
+gem "trilogy", "~> 2.13"
 
 # Features
 gem "bcrypt", "~> 3.1.22"
@@ -31,8 +31,9 @@ gem "geared_pagination", "~> 1.2"
 gem "rqrcode"
 gem "rouge"
 gem "jbuilder"
-gem "lexxy", "0.9.31"
-gem "image_processing", "~> 1.14"
+gem "lexxy", "0.9.32"
+gem "image_processing", "~> 2.1"
+gem "ruby-vips", require: false # image_processing 2 no longer depends on it; Active Storage loads it itself
 gem "platform_agent"
 gem "aws-sdk-s3", require: false
 gem "web-push"
