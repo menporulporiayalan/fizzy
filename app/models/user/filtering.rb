@@ -35,7 +35,7 @@ class User::Filtering
 
   def releases
     # Only the releases the index can actually match — Filter#cards is scoped to published cards.
-    @releases ||= account.cards.published.releases
+    @releases ||= account.cards.published.releases(first: filter.release)
   end
 
   def filters

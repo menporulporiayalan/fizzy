@@ -160,6 +160,13 @@
     --btn-border-radius: 0.3em;
     --btn-border-size: 0;
 
+    /* A row has a visible label, so undo the icon-only button shape buttons.css infers
+     * from `:has(.for-screen-reader):has(.icon)`: its `display: grid` plus
+     * `> * { grid-area: 1/1 }` stacks the label and the check into the same cell. */
+    aspect-ratio: auto;
+    block-size: auto;
+    display: flex;
+
     flex: 1 1 auto;
     font-weight: 500;
     justify-content: start;

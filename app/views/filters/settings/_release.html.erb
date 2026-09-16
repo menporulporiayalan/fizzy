@@ -3,6 +3,7 @@
 <%= tag.div class: "quick-filter",
       data: {
         controller: "dialog filter multi-selection-combobox",
+        filter_limit_value: Card::Releasable::SHOWN_BY_DEFAULT,
         action: "keydown.esc->dialog#close click@document->dialog#closeOnClickOutside dialog:close@document->filter#clearInput",
         filter_show: user_filtering.show_release?,
         multi_selection_combobox_single_value: true,
@@ -36,5 +37,9 @@
         <% end %>
       <% end %>
     </ul>
+
+    <% if user_filtering.releases.size > Card::Releasable::SHOWN_BY_DEFAULT %>
+      <div class="popup__footer txt-x-small">Search to find older releases</div>
+    <% end %>
   <% end %>
 <% end %>

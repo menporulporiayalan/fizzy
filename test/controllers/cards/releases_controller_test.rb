@@ -14,6 +14,25 @@ class Cards::ReleasesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".popup__item", text: /v1\.2/
   end
 
+  test "edit lists the most recently used releases first" do
+    cards(:layout).update_columns(release: "v1.2", updated_at: 3.days.ago)
+    cards(:text).update_columns(release: "v1.3", updated_at: 1.day.ago)
+
+    get edit_card_release_path(cards(:logo))
+
+    assert_equal %w[ v1.3 v1.2 ], css_select(".popup__item[role=checkbox] .overflow-ellipsis").map(&:text)
+  end
+
+  # The card's own release may be older than the ones the picker lists by default.
+  test "edit lists the release the card is in first" do
+    cards(:logo).update_columns(release: "v1.2", updated_at: 3.days.ago)
+    cards(:layout).update_columns(release: "v1.3", updated_at: 1.day.ago)
+
+    get edit_card_release_path(cards(:logo))
+
+    assert_equal %w[ v1.2 v1.3 ], css_select(".popup__item[role=checkbox] .overflow-ellipsis").map(&:text)
+  end
+
   test "edit checks the release the card is already in, and offers to clear it" do
     cards(:logo).update!(release: "v1.2")
 

@@ -1,6 +1,7 @@
 <%= turbo_frame_tag @card, :release_picker do %>
   <div class="flex-column full-width"
       data-controller="filter navigable-list"
+      data-filter-limit-value="<%= Card::Releasable::SHOWN_BY_DEFAULT %>"
       data-navigable-list-focus-on-selection-value="false"
       data-navigable-list-actionable-items-value="true"
       data-action="keydown->navigable-list#navigate filter:changed->navigable-list#reset dialog:show@document->navigable-list#reset">
@@ -40,5 +41,9 @@
         <% end %>
       </li>
     </ul>
+
+    <% if @releases.size > Card::Releasable::SHOWN_BY_DEFAULT %>
+      <div class="popup__footer txt-x-small">Search to find older releases</div>
+    <% end %>
   </div>
 <% end %>
