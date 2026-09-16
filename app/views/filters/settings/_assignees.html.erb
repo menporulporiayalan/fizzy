@@ -18,7 +18,7 @@
 
     <%= filter_dialog "Assigned to…" do %>
       <%= filter_title "Assigned to…" %>
-      <% if Current.account.users.active.many? %>
+      <% if user_filtering.users.many? %>
         <%= text_field_tag nil, nil, id: nil, placeholder: "Filter…", class: "input input--transparent txt-small", autofocus: true,
               type: "search", autocorrect: "off", autocomplete: "off", data: { "1p-ignore": "true", filter_target: "input", dialog_target: "focusMouse", action: "input->filter#filter" } %>
       <% end %>
