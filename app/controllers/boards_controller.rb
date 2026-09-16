@@ -4,6 +4,7 @@ class BoardsController < ApplicationController
   include FilterScoped
 
   before_action :set_board, except: %i[ index new create ]
+  before_action :scope_user_filtering_to_board, only: :show
   before_action :ensure_permission_to_admin_board, only: %i[ update destroy ]
 
   def index
@@ -72,6 +73,12 @@ class BoardsController < ApplicationController
   private
     def set_board
       @board = Current.user.boards.find params[:id]
+    end
+
+    # The board page filters within this board, so the people you can filter by
+    # come from its access list, even before the board is part of the filter.
+    def scope_user_filtering_to_board
+      @user_filtering = User::Filtering.new(Current.user, @filter, board: @board, expanded: expanded_param)
     end
 
     def ensure_permission_to_admin_board

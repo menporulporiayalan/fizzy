@@ -1,11 +1,13 @@
 class User::Filtering
-  attr_reader :user, :filter, :expanded
+  attr_reader :user, :filter, :board, :expanded
 
   delegate :as_params, :single_board, to: :filter
   delegate :only_closed?, to: :filter
 
-  def initialize(user, filter, expanded: false)
-    @user, @filter, @expanded = user, filter, expanded
+  # +board+ pins the filtering to a single board on pages that are already scoped
+  # to one, before any board has been picked in the filter itself.
+  def initialize(user, filter, board: nil, expanded: false)
+    @user, @filter, @board, @expanded = user, filter, board, expanded
   end
 
   def boards
@@ -25,12 +27,15 @@ class User::Filtering
   end
 
   def users
-    @users ||= account.users.active.alphabetically
+    @users ||= begin
+      people = account.users.active.alphabetically
+      people.with_access_to(filtered_boards).or(people.where(id: selected_user_ids))
+    end
   end
 
   def releases
     # Only the releases the index can actually match — Filter#cards is scoped to published cards.
-    @releases ||= account.cards.published.releases
+    @releases ||= account.cards.published.releases(first: filter.release)
   end
 
   def filters
@@ -88,6 +93,18 @@ class User::Filtering
   end
 
   private
+    # People are only pickable on the boards being filtered — the account roster is
+    # far wider than a board's access list.
+    def filtered_boards
+      filter.boards.presence || board || user.boards
+    end
+
+    # Keep whoever is already selected in the list, so narrowing the boards never
+    # silently drops a selection from the form.
+    def selected_user_ids
+      filter.assignees.ids | filter.creators.ids | filter.closers.ids
+    end
+
     def account
       user.account
     end

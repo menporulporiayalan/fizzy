@@ -2,7 +2,7 @@ class Cards::ReleasesController < ApplicationController
   include CardScoped
 
   def edit
-    @releases = Current.account.cards.releases
+    @releases = Current.account.cards.releases(first: @card.release)
     fresh_when etag: [ @releases, @card.release ]
   end
 

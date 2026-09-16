@@ -8,6 +8,8 @@ module User::Accessor
     has_many :accessible_cards, through: :boards, source: :cards
     has_many :accessible_comments, through: :accessible_cards, source: :comments
 
+    scope :with_access_to, ->(boards) { where(id: Access.where(board: boards).select(:user_id)) }
+
     after_create_commit :grant_access_to_boards, unless: :system?
   end
 
