@@ -93,7 +93,7 @@ PINNED_LITERALS = [
     defined_in: "lib/fizzy.rb", pattern: /File\.exist\?\(File\.expand_path\("\.\.\/([\w.\/]+)", __dir__\)\)/ },
   { describes: "search shard count",
     claims: [ { path: "AGENTS.md", pattern: /sharded (\d+) ways/ } ],
-    defined_in: "app/models/search/record/trilogy.rb", pattern: /SHARD_COUNT = (\d+)/ },
+    defined_in: "lib/active_search/store_adapters/mysql_sharded.rb", pattern: /SHARD_COUNT = (\d+)/ },
   { describes: "beta deploy template gate",
     claims: [ { path: "saas/AGENTS.md", pattern: /template requiring the `(\w+)` env var/ } ],
     defined_in: "saas/config/deploy.beta.yml", pattern: /must be given" unless ENV\["(\w+)"\]/ }

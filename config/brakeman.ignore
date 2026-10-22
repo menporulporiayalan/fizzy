@@ -3,6 +3,29 @@
     {
       "warning_type": "SQL Injection",
       "warning_code": 0,
+      "fingerprint": "028e6917b7f8f7e7bb66131c37587e29fe32b08195ca27ba64f798e76b7ecc0e",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "lib/active_search/store_adapters/mysql_sharded.rb",
+      "line": 69,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Arel.sql(\"MATCH(#{[\"account_key\", \"content\", \"title\"].map do\n \"#{model.connection.quote_table_name(model.table_name)}.#{model.connection.quote_column_name(:BRAKEMAN_SAFE_LITERAL)}\"\n end.join(\", \")}) AGAINST(#{model.connection.quote(query_context.query.to_s)} IN BOOLEAN MODE)\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "ActiveSearch::StoreAdapters::MysqlSharded",
+        "method": "apply_search"
+      },
+      "user_input": "[\"account_key\", \"content\", \"title\"].map do\n \"#{model.connection.quote_table_name(model.table_name)}.#{model.connection.quote_column_name(:BRAKEMAN_SAFE_LITERAL)}\"\n end.join(\", \")",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": "No user input reaches the SQL. The table name comes from the shard model, picked by CRC32(account_id) % 16, and is quoted. The columns are a frozen literal list that must match the FULLTEXT index, and are quoted. The query is quoted, and by this point stemming has already stripped every non-word character from it."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
       "fingerprint": "4ea2e6d704b817af1d896dcdf148a89da8b9e428b3327497631ef8d9ed587307",
       "check_name": "SQL",
       "message": "Possible SQL injection",

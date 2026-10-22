@@ -50,7 +50,8 @@ module ActiveSupport
     fixtures :all
 
     include ActiveJob::TestHelper
-    include ActionTextTestHelper, CachingTestHelper, CardTestHelper, ChangeTestHelper, DnsTestHelper, SessionTestHelper
+    include ActionTextTestHelper, CachingTestHelper, CardTestHelper, ChangeTestHelper, DnsTestHelper,
+      SearchIndexTestHelper, SessionTestHelper
     include Turbo::Broadcastable::TestHelper
 
     # Jobs must carry their own account context via AccountTenanted,

@@ -22,7 +22,7 @@ module PaginationHelper
   end
 
   def link_to_next_page(namespace, page, activate_when_observed: false, label: default_pagination_label(activate_when_observed), data: {}, **attributes)
-    if page.before_last? && !params[:previous]
+    if more_pages_after?(page) && !params[:previous]
       attributes[:class] = class_names(attributes[:class], "btn txt-small center-block center": !activate_when_observed)
       pagination_link(namespace, page.number + 1, label: label, activate_when_observed: activate_when_observed, data: data, **attributes)
     end
@@ -40,6 +40,11 @@ module PaginationHelper
         **data
       },
       **attributes
+  end
+
+  # ActiveSearch pages answer next?, geared_pagination's answer before_last?.
+  def more_pages_after?(page)
+    page.respond_to?(:next?) ? page.next? : page.before_last?
   end
 
   def pagination_frame_id_for(namespace, page_number)

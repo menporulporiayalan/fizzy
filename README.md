@@ -5,10 +5,14 @@ This is the source code of [Dayzy](https://fizzy.do/), the Kanban tracking tool 
 
 ## Running your own Dayzy instance
 
+### Deploying with Docker
+
 If you want to run your own Dayzy instance, but don't need to change its code, you can use our pre-built Docker image.
 You'll need access to a server on which you can run Docker, and you'll need to configure some options to customize your installation.
 
 You can find the details of how to do a Docker-based deployment in our [Docker deployment guide](docs/docker-deployment.md).
+
+### Deploying with Kamal
 
 If you want more flexibility to customize your Dayzy installation by changing its code, and deploy those changes to your server, then we recommend you deploy Dayzy with Kamal. You can find a complete walkthrough of doing that in our [Kamal deployment guide](docs/kamal-deployment.md).
 

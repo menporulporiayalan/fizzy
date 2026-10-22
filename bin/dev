@@ -56,10 +56,6 @@ if [ "$USE_PUSH" = "1" ]; then
   fi
 fi
 
-if [ ! -f tmp/solid-queue.txt ]; then
-  export SOLID_QUEUE_IN_PUMA=false
-fi
-
 if [ -f tmp/oss-config.txt ]; then
   export OSS_CONFIG=1
 fi

@@ -79,6 +79,28 @@ class Card::EntropicTest < ActiveSupport::TestCase
     assert cards(:radio).reload.postponed?
   end
 
+  test "auto postpone all due keeps going past a card that can't be postponed, then raises" do
+    entropies(:writebook_board).destroy
+    period = entropies("37s_account").auto_postpone_period
+
+    cards(:logo).update!(last_active_at: 1.day.ago - period)
+    cards(:layout).update!(last_active_at: 1.day.ago - period)
+    cards(:radio).update!(last_active_at: entropies(:miltons_wish_list_board).auto_postpone_period.seconds.ago - 2.days)
+    cards(:logo).update_column(:creator_id, ActiveRecord::Type::Uuid.generate)
+    Current.reset
+
+    error = assert_raises(Card::Entropic::AutoPostponeError) do
+      Card.auto_postpone_all_due
+    end
+
+    assert_equal [ cards(:logo).id ], error.failures.keys
+    assert_kind_of ActiveRecord::RecordInvalid, error.failures[cards(:logo).id]
+    assert_match cards(:logo).id, error.message
+    assert_not cards(:logo).reload.postponed?
+    assert cards(:layout).reload.postponed?
+    assert cards(:radio).reload.postponed?
+  end
+
   test "postponing_soon scope works properly cross-account" do
     cards(:logo).update!(last_active_at: entropies(:writebook_board).auto_postpone_period.seconds.ago + 2.days)
     cards(:radio).update!(last_active_at: entropies(:miltons_wish_list_board).auto_postpone_period.seconds.ago + 2.days)

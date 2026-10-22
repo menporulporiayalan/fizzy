@@ -3,6 +3,10 @@ class Account::DataTransfer::RecordSet
   class ConflictError < IntegrityError; end
 
   IMPORT_BATCH_SIZE = 100
+
+  # A batch holds every record it reads until it inserts them, so a batch also
+  # ends once its entries add up to this many bytes.
+  IMPORT_BATCH_BYTES = 16.megabytes
   INTERNAL_RECORD_TYPES = %w[Export Account::Import].freeze
 
   attr_accessor :importable_model_names
@@ -31,7 +35,7 @@ class Account::DataTransfer::RecordSet
       file_list = files
       file_list = skip_to(file_list, start) if start
 
-      file_list.each_slice(IMPORT_BATCH_SIZE) do |file_batch|
+      batches_of(file_list).each do |file_batch|
         import_batch(file_batch)
         callback&.call(record_set: self, files: file_batch)
       end
@@ -73,6 +77,26 @@ class Account::DataTransfer::RecordSet
 
     def files
       zip.glob("data/#{model_dir}/*.json")
+    end
+
+    def batches_of(files)
+      Enumerator.new do |batches|
+        batch = []
+        bytes = 0
+
+        files.each do |file|
+          batch << file
+          bytes += zip.size(file)
+
+          if batch.size == IMPORT_BATCH_SIZE || bytes >= IMPORT_BATCH_BYTES
+            batches << batch
+            batch = []
+            bytes = 0
+          end
+        end
+
+        batches << batch if batch.any?
+      end
     end
 
     def import_batch(files)
@@ -128,6 +152,19 @@ class Account::DataTransfer::RecordSet
       if associated_class.exists?(id: associated_id)
         raise ConflictError, "#{model} record references existing #{association.name} (#{associated_class}) with ID #{associated_id}"
       end
+
+      if associated_class == ::User && !user_in_export?(associated_id)
+        raise IntegrityError, "#{model} record references #{association.name} with ID #{associated_id}, which is not a user in the export"
+      end
+    end
+
+    def user_in_export?(user_id)
+      exported_user_ids.include?(user_id.to_s)
+    end
+
+    def exported_user_ids
+      @exported_user_ids ||= {}
+      @exported_user_ids[zip] ||= zip.glob("data/users/*.json").to_set { |path| File.basename(path, ".json") }
     end
 
     def check_unique_keys_available(data)

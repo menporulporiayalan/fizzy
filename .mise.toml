@@ -8,7 +8,9 @@ gum = "0.17.0"
 prek = "0.4.11"
 
 [env]
-PROMETHEUS_EXPORTER_URL = "http://127.0.0.1:9306/metrics"
+# Loopback rather than the plugin's 0.0.0.0, but keep its port: 9306 is Manticore's, and
+# the active_search gem's containers then stop Puma booting at all.
+PROMETHEUS_EXPORTER_URL = "http://127.0.0.1:9394/metrics"
 
 [bootstrap.packages]
 # Arch
